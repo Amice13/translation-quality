@@ -387,6 +387,11 @@ scores <- expert_scores %>%
 complete <- data$pairs %>%
   left_join(scores, by = "hash")
 
+rm(
+  cometkiwi_wmt,
+  xcomet_metricx24
+)
+
 # Correlation matrix between groups
 
 cors <- cor(
@@ -453,13 +458,6 @@ results[["scatterplot_data"]] <- df_long
 custom_ggsave("./results/Figure 7 - Scatterplots for scores.png", width = 180)
 rm(cor_scores, levels, df_long, plot_data)
 
-rm(
-  student_scores,
-  expert_scores,
-  fluency_scores,
-  adequacy_scores
-)
-
 # Standard deviations and complexity
 
 student_scores <- data$students_1f_scores %>%
@@ -494,6 +492,13 @@ scores <- expert_scores %>%
   left_join(fluency_scores, by = "hash") %>%
   left_join(adequacy_scores, by = "hash")
 
+rm(
+  student_scores,
+  expert_scores,
+  fluency_scores,
+  adequacy_scores
+)
+
 complete <- data$pairs %>%
   left_join(scores, by = "hash")
 
@@ -508,7 +513,13 @@ custom_ggsave(
   width = 220
 )
 results[["text_scores_cors"]] <- cors
-rm(cors, complete)
+
+rm(
+  cors,
+  complete,
+  experts,
+  experts_2fa
+)
 
 # Expert learning
 

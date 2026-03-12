@@ -453,6 +453,13 @@ results[["scatterplot_data"]] <- df_long
 custom_ggsave("./results/Figure 7 - Scatterplots for scores.png", width = 180)
 rm(cor_scores, levels, df_long, plot_data)
 
+rm(
+  student_scores,
+  expert_scores,
+  fluency_scores,
+  adequacy_scores
+)
+
 # Standard deviations and complexity
 
 student_scores <- data$students_1f_scores %>%
@@ -501,7 +508,7 @@ custom_ggsave(
   width = 220
 )
 results[["text_scores_cors"]] <- cors
-rm(cors)
+rm(cors, complete)
 
 # Expert learning
 
@@ -544,3 +551,5 @@ writeLines(
   "./results/Model 3 - Expert duration.txt"
 )
 results[["model_expert_duration"]] <- model
+
+rm(scores)

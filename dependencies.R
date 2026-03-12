@@ -2,7 +2,6 @@ DIST_DIRECTORY <- paste0(SOURCE_FOLDER, "/libraries")
 
 # List of libraries to include
 dependencies <- c(
-  "ggplot2",
   "ggdendro",
   "quanteda.textstats",
   "quanteda",
@@ -39,7 +38,7 @@ writeLines(
   unlist(
     lapply(
       names(sessionInfo()[["otherPkgs"]]),
-      function(x) toBibtex(citation(x))
+      function(x) tryCatch(toBibtex(citation(x)), error = function(e) NULL)
     )
   ),
   "./results/citations.bib"

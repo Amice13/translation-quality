@@ -20,24 +20,24 @@ custom_describe <- function(data, variable) {
 get_ira_irr <- function(data, n, type) {
   cols <- paste0("Expert ", n, c("_1", "_2"))
   scores <- data %>% dplyr::select(all_of(cols))
-  
+
   icc_res <- irr::icc(
     as.matrix(scores),
     model = "twoway",
     type  = "consistency",
     unit  = "single"
   )
-  
+
   diff <- scores[[2]] - scores[[1]]
-  
+
   bias <- mean(diff, na.rm = TRUE)
   sd_diff <- sd(diff, na.rm = TRUE)
-  
+
   upper <- bias + 1.96 * sd_diff
   lower <- bias - 1.96 * sd_diff
-  
+
   t_res <- t.test(scores[[1]], scores[[2]], paired = TRUE)
-  
+
   data.frame(
     evaluator = paste0("Expert ", n),
     type = type,
@@ -56,7 +56,7 @@ get_ira_irr <- function(data, n, type) {
 }
 
 # Get inter-rater ICC for a group of experts
-get_group_icc <- function (data, group) {
+get_group_icc <- function(data, group) {
   icc_res <- icc(
     data %>% dplyr::select(-any_of(c("hash", "sd_norm", "average"))),
     model = "twoway",
@@ -73,19 +73,19 @@ get_group_icc <- function (data, group) {
   )
 }
 
-get_expert_influence <- function (data) {
+get_expert_influence <- function(data) {
   scores <- data %>% dplyr::select(-any_of(c("hash", "sd_norm", "average")))
   experts <- colnames(scores)
   results <- lapply(experts, function(expert) {
     tmp <- scores %>% dplyr::select(-all_of(expert))
-    
+
     icc_res <- icc(
       tmp,
       model = "twoway",
       type = "agreement",
       unit = "single"
     )
-    
+
     data.frame(
       removed_expert = expert,
       ICC = icc_res$value,
@@ -93,8 +93,27 @@ get_expert_influence <- function (data) {
       upper = icc_res$ubound
     )
   })
-  
+
   leave_one_out <- bind_rows(results)
   leave_one_out
 }
 
+# Function to plot correlation matrix
+plot_cor <- function (cors) {
+  plot_data <- melt(cors)
+  colnames(plot_data) <- c("x", "y", "value")
+  
+  plot_data$label <- sprintf("%.3f", plot_data$value)
+  
+  ggplot(plot_data, aes(x = x, y = y, fill = value)) +
+    scale_fill_gradientn(colours = c("#0096FF", "white", "red"),
+                         values = scales::rescale(c(0.1, 0.5, 1))) +
+    geom_tile(color = "black") + coord_fixed() +
+    guides(fill = guide_colourbar(title = "Correlation")) +
+    geom_text(aes(label = label), color = "black", size = 3) +
+    theme(
+      axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+      axis.title.x = element_blank(),
+      axis.title.y = element_blank()
+    )  
+}

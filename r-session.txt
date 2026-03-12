@@ -16,22 +16,23 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] nsyllable_1.0.1           report_0.6.3              memisc_0.99.31.8.3        MASS_7.3-61              
- [5] lattice_0.22-6            betareg_3.2-3             reshape2_1.4.4            lubridate_1.9.4          
- [9] forcats_1.0.0             stringr_1.5.1             dplyr_1.1.4               purrr_1.0.4              
-[13] readr_2.1.5               tidyr_1.3.1               tibble_3.2.1              tidyverse_2.0.0          
-[17] psych_2.4.12              lme4_2.0-1                Matrix_1.7-1              irr_0.84.1               
-[21] lpSolve_5.6.23            quanteda_4.3.1            quanteda.textstats_0.97.2 ggdendro_0.2.0           
-[25] ggplot2_3.5.1             rstudioapi_0.17.1        
+ [1] lintr_3.2.0               nsyllable_1.0.1           report_0.6.3              memisc_0.99.31.8.3       
+ [5] MASS_7.3-61               lattice_0.22-6            betareg_3.2-3             reshape2_1.4.4           
+ [9] lubridate_1.9.4           forcats_1.0.0             stringr_1.5.1             dplyr_1.1.4              
+[13] purrr_1.0.4               readr_2.1.5               tidyr_1.3.1               tibble_3.2.1             
+[17] tidyverse_2.0.0           psych_2.4.12              lme4_2.0-1                Matrix_1.7-1             
+[21] irr_0.84.1                lpSolve_5.6.23            quanteda_4.3.1            quanteda.textstats_0.97.2
+[25] ggdendro_0.2.0            ggplot2_3.5.1             rstudioapi_0.17.1        
 
 loaded via a namespace (and not attached):
- [1] fastmatch_1.1-8   gtable_0.3.6      insight_1.4.6     tzdb_0.5.0        vctrs_0.6.5       tools_4.4.2      
- [7] Rdpack_2.6.6      generics_0.1.3    stats4_4.4.2      parallel_4.4.2    flexmix_2.3-20    sandwich_3.1-1   
-[13] pkgconfig_2.0.3   data.table_1.17.0 lifecycle_1.0.4   farver_2.1.2      compiler_4.4.2    textshaping_1.0.0
-[19] munsell_0.5.1     mnormt_2.1.1      yaml_2.3.10       Formula_1.2-5     crayon_1.5.3      pillar_1.10.1    
-[25] nloptr_2.2.1      reformulas_0.4.4  boot_1.3-31       nlme_3.1-166      stopwords_2.3     tidyselect_1.2.1 
-[31] stringi_1.8.4     labeling_0.4.3    splines_4.4.2     grid_4.4.2        colorspace_2.1-1  cli_3.6.3        
-[37] magrittr_2.0.3    utf8_1.2.4        withr_3.0.2       scales_1.3.0      timechange_0.3.0  nnet_7.3-19      
-[43] ragg_1.3.3        zoo_1.8-14        modeltools_0.2-24 hms_1.1.3         rbibutils_2.4.1   lmtest_0.9-40    
-[49] mgcv_1.9-1        rlang_1.1.5       Rcpp_1.0.14       glue_1.8.0        jsonlite_1.9.1    minqa_1.2.8      
-[55] R6_2.5.1          plyr_1.8.9        systemfonts_1.2.1
+ [1] tidyselect_1.2.1   farver_2.1.2       lazyeval_0.2.2     rex_1.2.1          timechange_0.3.0   lifecycle_1.0.4   
+ [7] magrittr_2.0.3     compiler_4.4.2     rlang_1.1.5        tools_4.4.2        utf8_1.2.4         yaml_2.3.10       
+[13] data.table_1.17.0  labeling_0.4.3     stopwords_2.3      mnormt_2.1.1       xmlparsedata_1.0.5 plyr_1.8.9        
+[19] xml2_1.3.8         withr_3.0.2        nnet_7.3-19        grid_4.4.2         stats4_4.4.2       colorspace_2.1-1  
+[25] scales_1.3.0       insight_1.4.6      cli_3.6.3          crayon_1.5.3       ragg_1.3.3         reformulas_0.4.4  
+[31] generics_0.1.3     tzdb_0.5.0         minqa_1.2.8        modeltools_0.2-24  splines_4.4.2      parallel_4.4.2    
+[37] vctrs_0.6.5        boot_1.3-31        sandwich_3.1-1     jsonlite_1.9.1     hms_1.1.3          Formula_1.2-5     
+[43] systemfonts_1.2.1  glue_1.8.0         nloptr_2.2.1       codetools_0.2-20   stringi_1.8.4      gtable_0.3.6      
+[49] lmtest_0.9-40      munsell_0.5.1      pillar_1.10.1      R6_2.5.1           textshaping_1.0.0  Rdpack_2.6.6      
+[55] rbibutils_2.4.1    backports_1.5.0    Rcpp_1.0.14        flexmix_2.3-20     fastmatch_1.1-8    nlme_3.1-166      
+[61] mgcv_1.9-1         zoo_1.8-14         pkgconfig_2.0.3   

@@ -1,3 +1,4 @@
+# Default theme for ggplot2
 default_theme <- theme_bw(base_size = 12) +
   theme(
     plot.title = element_text(face = "bold", hjust = 0.5),
@@ -9,12 +10,12 @@ theme_set(default_theme)
 rm(default_theme)
 
 custom_ggsave <- function(
-    filename,
-    plot = last_plot(),
-    width = 120,
-    ratio = 0.75,
-    units = "mm",
-    dpi = 600
+  filename,
+  plot = last_plot(),
+  width = 120,
+  ratio = 0.75,
+  units = "mm",
+  dpi = 600
 ) {
   ggsave(
     filename = filename,
@@ -26,3 +27,5 @@ custom_ggsave <- function(
     device = tools::file_ext(filename)
   )
 }
+
+results = list()

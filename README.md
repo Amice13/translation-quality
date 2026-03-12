@@ -18,6 +18,7 @@ All source datasets should be placed in the **data/** directory.
 * **r-session.Rdata** - Serialized R session information used for reproducibility.
 * **r-session.txt** - Plain-text record of the R session information (packages and versions).
 * **tests.R** - Automated tests verifying that analytical results remain stable. These tests detect changes caused by package updates or modifications in the analysis code.
+* **.lintr** - Linter custom rules.
 
 ## Generated files
 

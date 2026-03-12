@@ -1,0 +1,100 @@
+# Provides basic stats about the defined variable
+custom_describe <- function(data, variable) {
+  data %>%
+    summarise(
+      n = n(),
+      mean = mean({{ variable }}, na.rm = TRUE),
+      sd = sd({{ variable }}, na.rm = TRUE),
+      min = min({{ variable }}, na.rm = TRUE),
+      q05 = quantile({{ variable }}, 0.05, na.rm = TRUE),
+      q25 = quantile({{ variable }}, 0.25, na.rm = TRUE),
+      median = quantile({{ variable }}, 0.50, na.rm = TRUE),
+      q75 = quantile({{ variable }}, 0.75, na.rm = TRUE),
+      q95 = quantile({{ variable }}, 0.95, na.rm = TRUE),
+      max = max({{ variable }}, na.rm = TRUE),
+      .groups = "drop"
+    )
+}
+
+# Provides the statistics about the interrater reliability and agreement
+get_ira_irr <- function(data, n, type) {
+  cols <- paste0("Expert ", n, c("_1", "_2"))
+  scores <- data %>% dplyr::select(all_of(cols))
+  
+  icc_res <- irr::icc(
+    as.matrix(scores),
+    model = "twoway",
+    type  = "consistency",
+    unit  = "single"
+  )
+  
+  diff <- scores[[2]] - scores[[1]]
+  
+  bias <- mean(diff, na.rm = TRUE)
+  sd_diff <- sd(diff, na.rm = TRUE)
+  
+  upper <- bias + 1.96 * sd_diff
+  lower <- bias - 1.96 * sd_diff
+  
+  t_res <- t.test(scores[[1]], scores[[2]], paired = TRUE)
+  
+  data.frame(
+    evaluator = paste0("Expert ", n),
+    type = type,
+    ICC = icc_res$value,
+    ICC_lower_bound = icc_res$lbound,
+    ICC_upper_bound = icc_res$ubound,
+    ICC_p = icc_res$p.value,
+    ICC_F = icc_res$Fvalue,
+    bias = bias,
+    sd_diff = sd_diff,
+    loa_lower = lower,
+    loa_upper = upper,
+    t_statistic = t_res$statistic,
+    t_p_value = t_res$p.value
+  )
+}
+
+# Get inter-rater ICC for a group of experts
+get_group_icc <- function (data, group) {
+  icc_res <- icc(
+    data %>% dplyr::select(-any_of(c("hash", "sd_norm", "average"))),
+    model = "twoway",
+    type = "agreement",
+    unit = "single"
+  )
+  data.frame(
+    group = group,
+    ICC = icc_res$value,
+    ICC_lower_bound = icc_res$lbound,
+    ICC_upper_bound = icc_res$ubound,
+    ICC_p = icc_res$p.value,
+    ICC_F = icc_res$Fvalue
+  )
+}
+
+get_expert_influence <- function (data) {
+  scores <- data %>% dplyr::select(-any_of(c("hash", "sd_norm", "average")))
+  experts <- colnames(scores)
+  results <- lapply(experts, function(expert) {
+    tmp <- scores %>% dplyr::select(-all_of(expert))
+    
+    icc_res <- icc(
+      tmp,
+      model = "twoway",
+      type = "agreement",
+      unit = "single"
+    )
+    
+    data.frame(
+      removed_expert = expert,
+      ICC = icc_res$value,
+      lower = icc_res$lbound,
+      upper = icc_res$ubound
+    )
+  })
+  
+  leave_one_out <- bind_rows(results)
+  leave_one_out
+}
+

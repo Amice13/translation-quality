@@ -47,3 +47,12 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# R local libraries
+libraries/
+
+# Local results
+results/
+
+# Local data
+data/

@@ -27,5 +27,3 @@ custom_ggsave <- function(
     device = tools::file_ext(filename)
   )
 }
-
-results = list()

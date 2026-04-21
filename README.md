@@ -15,6 +15,7 @@ All source datasets should be placed in the **data/** directory.
 * **data.R** - Scripts responsible for loading and preparing raw data for analysis.
 * **dependencies.R** - Installs and loads all required R packages used in the project. It also generates the file with citations and information used for reproducibility.
 * **functions.R** - Collection of helper and utility functions used by the analysis.
+* **output.R** - Scripts responsible for generating the results.
 * **r-session.Rdata** - Serialized R session information used for reproducibility.
 * **r-session.txt** - Plain-text record of the R session information (packages and versions).
 * **setup.R** - Generation of the required folders and the project intialization.

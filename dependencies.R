@@ -1,7 +1,5 @@
-LIB_FOLDER <- paste0(SOURCE_FOLDER, "/libraries")
-RESULTS_FOLDER <- paste0(SOURCE_FOLDER, "/results")
+LIB_FOLDER <- file.path(SOURCE_FOLDER, "libraries")
 
-# List of libraries to include
 dependencies <- c(
   "ggdendro",
   "quanteda.textstats",
@@ -12,43 +10,36 @@ dependencies <- c(
   "ggplot2",
   "tidyverse",
   "reshape2",
+  "dplyr",
   "betareg",
   "memisc",
-  "dplyr",
   "report",
   "nsyllable",
   "testthat"
 )
 
-install_dependencies <- function(pkgs) {
+install_dependencies <- function(pkgs, lib = LIB_FOLDER) {
   missing <- pkgs[!pkgs %in% rownames(installed.packages())]
   if (length(missing)) {
-    install.packages(missing, destdir = LIB_FOLDER)
+    install.packages(missing, destdir = lib)
   }
   invisible(lapply(pkgs, library, character.only = TRUE))
 }
 
 install_dependencies(dependencies)
 
-# Store session data
-writeLines(capture.output(sessionInfo()), "r-session.txt")
 session <- sessionInfo()
+writeLines(capture.output(session), "r-session.txt")
 save(session, file = "r-session.Rdata")
 
-# Save citations
 writeLines(
   unlist(
     lapply(
-      names(sessionInfo()[["otherPkgs"]]),
+      names(session[["otherPkgs"]]),
       function(x) tryCatch(toBibtex(citation(x)), error = function(e) NULL)
     )
   ),
-  "./results/citations.bib"
+  file.path(RESULTS_FOLDER, "citations.bib")
 )
 
-rm(
-  install_dependencies,
-  session,
-  dependencies,
-  LIB_FOLDER
-)
+rm(install_dependencies, session, dependencies, LIB_FOLDER)

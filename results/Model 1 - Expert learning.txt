@@ -1,0 +1,25 @@
+Linear mixed model fit by REML ['lmerMod']
+Formula: duration ~ order + (1 | hash) + (1 | evaluator)
+   Data: data$enriched_expert_scores %>% filter(duration < 120)
+
+REML criterion at convergence: 84969.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-2.2070 -0.5528 -0.1545  0.2695  5.5881 
+
+Random effects:
+ Groups    Name        Variance Std.Dev.
+ hash      (Intercept)  97.37    9.868  
+ evaluator (Intercept) 130.30   11.415  
+ Residual              280.00   16.733  
+Number of obs: 9846, groups:  hash, 1000; evaluator, 12
+
+Fixed effects:
+              Estimate Std. Error t value
+(Intercept) 33.5113788  3.3476985   10.01
+order       -0.0116606  0.0009113  -12.79
+
+Correlation of Fixed Effects:
+      (Intr)
+order -0.125

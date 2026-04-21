@@ -1,12 +1,6 @@
 # Setup environment
 
-if (!requireNamespace("rstudioapi", quietly = TRUE)) {
-  install.packages("rstudioapi")
-}
-library("rstudioapi")
-SOURCE_FOLDER <- dirname(rstudioapi::getSourceEditorContext()$path)
-setwd(SOURCE_FOLDER)
-
+source("setup.R")
 source("dependencies.R")
 source("config.R")
 source("data.R")
@@ -66,6 +60,7 @@ rm(
 
 irr_results <- irr_ira %>%
   left_join(duration_stats, by = "evaluator") %>%
+  left_join(data$expert_batch_difference, by = "evaluator") %>%
   mutate(
     `Expert` = evaluator,
     `Average Time (s)` = sprintf("%.2f", mean),
@@ -74,7 +69,8 @@ irr_results <- irr_ira %>%
     `Bias` = sprintf("%.2f", bias),
     `Bias (CI)` = sprintf("(%.2f; %.2f)", loa_lower, loa_upper),
     `Paired T` = round(t_statistic, 2),
-    `P value` = signif(t_p_value, 2)
+    `P value` = signif(t_p_value, 2),
+    `First–last batch interval` = signif(diff, 2)
   ) %>%
   dplyr::select(
     `Expert`,
@@ -84,7 +80,8 @@ irr_results <- irr_ira %>%
     `Bias`,
     `Bias (CI)`,
     `Paired T`,
-    `P value`
+    `P value`,
+    `First–last batch interval`
   )
 
 write.csv(
@@ -115,7 +112,7 @@ rm(irr_results, duration_stats, irr_ira)
 
 irr <- bind_rows(
   get_group_icc(data$machine_1f_scores, "Machine"),
-  get_group_icc(data$machine_1f_z_score, "Machine z"),
+  get_group_icc(data$machine_1f_z_scores, "Machine z"),
   get_group_icc(data$students_1f_perc, "Machine perc"),
   get_group_icc(data$students_1f_norm, "Machine norm"),
   get_group_icc(data$students_1f_scores, "Student"),
@@ -191,6 +188,7 @@ ggplot(
 custom_ggsave("./results/Figure 3 - Machine influence.png")
 
 results[["one_out_students"]] <- get_expert_influence(data$students_1f_z_scores)
+
 ggplot(
   results[["one_out_students"]],
   aes(x = removed_expert, y = ICC)
@@ -204,6 +202,7 @@ ggplot(
 custom_ggsave("./results/Figure 3 - Student influence.png")
 
 results[["one_out_experts"]] <- get_expert_influence(data$experts_1f_z_scores)
+
 ggplot(
   results[["one_out_experts"]],
   aes(x = removed_expert, y = ICC)
@@ -217,6 +216,7 @@ ggplot(
 custom_ggsave("./results/Figure 3 - Expert influence.png")
 
 results[["one_out_fluency"]] <- get_expert_influence(data$experts_2f_z_fluency)
+
 ggplot(
   results[["one_out_fluency"]],
   aes(x = removed_expert, y = ICC)
@@ -245,7 +245,6 @@ ggplot(
 custom_ggsave("./results/Figure 3 - Adequacy influence.png")
 
 # Machine evaluations clustering
-
 scores <- data$machine_1f_z_scores %>%
   dplyr::select(-hash)
 
@@ -327,7 +326,7 @@ student_scores <- data$students_1f_z_scores %>%
 expert_scores <- data$experts_1f_z_scores %>%
   dplyr::select(all_of(c(experts, "hash"))) %>%
   mutate(
-    experts = rowMeans(dplyr::pick(experts))
+    experts = rowMeans(dplyr::pick(all_of(experts)))
   ) %>%
   dplyr::select(hash, experts)
 
@@ -363,7 +362,7 @@ machine_scores <- data$machine_1f_z_scores %>%
   dplyr::select(-bicleaner_ai_score) %>%
   mutate(
     machines = rowMeans(dplyr::pick(
-      -any_of(c("bicleaner_ai_scorea", "hash", "sd_norm", "average"))
+      -any_of(c("bicleaner_ai_score", "hash", "sd_norm", "average"))
     ))
   ) %>%
   dplyr::select(hash, machines)
@@ -385,7 +384,8 @@ scores <- expert_scores %>%
   left_join(bicleaner_ai_score, by = "hash")
 
 complete <- data$pairs %>%
-  left_join(scores, by = "hash")
+  left_join(scores, by = "hash") %>%
+  mutate(holistic = experts)
 
 rm(
   cometkiwi_wmt,
@@ -398,7 +398,7 @@ cors <- cor(
   complete %>%
     dplyr::select(
       students,
-      experts,
+      holistic,
       fluency,
       adequacy,
       cometkiwi_wmt,
@@ -406,13 +406,15 @@ cors <- cor(
       machines,
       bicleaner_ai
     ),
-  use = "pairwise.complete.obs"
+  use = "pairwise.complete.obs",
+  method = "spearman"
 )
 
 plot_cor(cors)
 
 custom_ggsave("./results/Figure 6 - Group correlation matrix.png", width = 180)
 results[["group_cors"]] <- cors
+
 rm(
   student_scores,
   expert_scores,
@@ -456,7 +458,7 @@ ggplot(df_long, aes(x = xval, y = yval)) +
 
 results[["scatterplot_data"]] <- df_long
 custom_ggsave("./results/Figure 7 - Scatterplots for scores.png", width = 180)
-rm(cor_scores, levels, df_long, plot_data)
+rm(cor_scores, levels, df_long)
 
 # Standard deviations and complexity
 
@@ -469,21 +471,21 @@ student_scores <- data$students_1f_scores %>%
 expert_scores <- data$experts_1f_scores %>%
   dplyr::select(all_of(c(experts, "hash"))) %>%
   mutate(
-    experts = apply(dplyr::pick(experts), 1, sd)
+    experts = apply(dplyr::pick(all_of(experts)), 1, sd)
   ) %>%
   dplyr::select(hash, experts)
 
 fluency_scores <- data$experts_2f_fluency %>%
   dplyr::select(all_of(c(experts_2fa, "hash"))) %>%
   mutate(
-    fluency = apply(dplyr::pick(experts_2fa), 1, sd)
+    fluency = apply(dplyr::pick(all_of(experts_2fa)), 1, sd)
   ) %>%
   dplyr::select(hash, fluency)
 
 adequacy_scores <- data$experts_2f_z_adequacy %>%
   dplyr::select(all_of(c(experts_2fa, "hash"))) %>%
   mutate(
-    adequacy = apply(dplyr::pick(experts_2fa), 1, sd)
+    adequacy = apply(dplyr::pick(all_of(experts_2fa)), 1, sd)
   ) %>%
   dplyr::select(hash, adequacy)
 
@@ -528,7 +530,6 @@ model <- lmer(
   data = data$enriched_expert_scores %>%
     filter(duration < 120)
 )
-summary(model)
 
 writeLines(
   capture.output(summary(model)),
@@ -563,4 +564,6 @@ writeLines(
 )
 results[["model_expert_duration"]] <- model
 
-rm(scores)
+rm(scores, model)
+
+source("tests.R")

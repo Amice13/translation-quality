@@ -80,7 +80,6 @@ enriched_machine_scores <- machine_scores %>%
 
 
 # Split source data to sub-groups
-
 students_scores <- enriched_expert_scores %>%
   filter(evaluator_type == "Student") %>%
   arrange(start_time)
@@ -94,14 +93,12 @@ experts_two_factors_scores <- enriched_expert_scores %>%
   arrange(start_time)
 
 # Process machines' scores
-
 machine_1f_scores <- create_wide_data(enriched_machine_scores, answer)
 machine_1f_z_scores <- create_wide_data(enriched_machine_scores, z_score)
 machine_1f_perc <- create_wide_data(enriched_machine_scores, percentile)
 machine_1f_norm <- create_wide_data(enriched_machine_scores, norm_score)
 
 # Process students' scores
-
 students_all_scores <- remove_duplicates(students_scores)
 students_1f_scores <- create_wide_data(students_all_scores, answer)
 students_1f_z_scores <- create_wide_data(students_all_scores, z_score)
@@ -155,6 +152,21 @@ experts_2f_adequacy_norm <- create_wide_data(
   experts_2f_all_scores, norm_score_adequacy
 )
 
+# Calculate time between the first and the last batch
+expert_batch_difference <- expert_scores %>%
+  group_by(evaluator, hash) %>%
+  filter(n() > 1) %>%
+  mutate(rep = row_number()) %>%
+  ungroup() %>%
+  mutate(start_time = as.POSIXct(start_time, format = "%Y-%m-%dT%H:%M:%OS")) %>%
+  group_by(evaluator, rep) %>%
+  summarise(min_time = min(start_time), .groups = "drop") %>%
+  arrange(evaluator, rep) %>%
+  group_by(evaluator) %>%
+  mutate(diff = min_time - lag(min_time)) %>%
+  filter(!is.na(diff)) %>%
+  dplyr::select(c("evaluator", "diff"))
+
 # Process texts
 
 corpus <- corpus(source_pairs$en, docnames = source_pairs$hash)
@@ -207,6 +219,7 @@ data <- list(
   experts_2f_z_adequacy = experts_2f_z_adequacy,
   experts_2f_adequacy_perc = experts_2f_adequacy_perc,
   experts_2f_adequacy_norm = experts_2f_adequacy_norm,
+  expert_batch_difference = expert_batch_difference,
   pairs = pairs
 )
 
@@ -248,6 +261,7 @@ rm(
   experts_2f_z_adequacy,
   experts_2f_adequacy_perc,
   experts_2f_adequacy_norm,
+  expert_batch_difference,
   corpus,
   diversities,
   readabilities,

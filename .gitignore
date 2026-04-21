@@ -50,9 +50,3 @@ rsconnect/
 
 # R local libraries
 libraries/
-
-# Local results
-results/
-
-# Local data
-data/

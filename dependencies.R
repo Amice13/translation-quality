@@ -1,4 +1,5 @@
-DIST_DIRECTORY <- paste0(SOURCE_FOLDER, "/libraries")
+LIB_FOLDER <- paste0(SOURCE_FOLDER, "/libraries")
+RESULTS_FOLDER <- paste0(SOURCE_FOLDER, "/results")
 
 # List of libraries to include
 dependencies <- c(
@@ -15,13 +16,14 @@ dependencies <- c(
   "memisc",
   "dplyr",
   "report",
-  "nsyllable"
+  "nsyllable",
+  "testthat"
 )
 
 install_dependencies <- function(pkgs) {
   missing <- pkgs[!pkgs %in% rownames(installed.packages())]
   if (length(missing)) {
-    install.packages(missing, destdir = DIST_DIRECTORY)
+    install.packages(missing, destdir = LIB_FOLDER)
   }
   invisible(lapply(pkgs, library, character.only = TRUE))
 }
@@ -48,5 +50,5 @@ rm(
   install_dependencies,
   session,
   dependencies,
-  DIST_DIRECTORY
+  LIB_FOLDER
 )

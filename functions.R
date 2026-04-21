@@ -16,6 +16,19 @@ custom_describe <- function(data, variable) {
     )
 }
 
+# Dataframe normalization
+normalize_df <- function(df, digits = 2) {
+  df %>%
+    mutate(
+      across(where(is.numeric), ~ round(.x, digits)),
+      across(where(is.factor), as.character)
+    )
+}
+
+is_primitive <- function(x) {
+  is.atomic(x) && length(x) == 1 && !is.null(x)
+}
+
 # Provides the statistics about the interrater reliability and agreement
 get_ira_irr <- function(data, n, type) {
   cols <- paste0("Expert ", n, c("_1", "_2"))

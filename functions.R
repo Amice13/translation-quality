@@ -1,5 +1,9 @@
 result_path <- function(...) file.path(RESULTS_FOLDER, ...)
 
+get_output <- function (f) {
+  file.path(SOURCE_FOLDER, "outputs", f)
+}
+
 # Provides basic stats about the defined variable
 custom_describe <- function(data, variable) {
   data %>%
@@ -126,6 +130,7 @@ plot_cor <- function (cors) {
     guides(fill = guide_colourbar(title = "Correlation")) +
     geom_text(aes(label = label), color = "black", size = 3) +
     theme(
+      legend.position = "none",
       axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
       axis.title.x = element_blank(),
       axis.title.y = element_blank()

@@ -57,3 +57,5 @@ for (name in names(results)) {
     compare_objects(results[[name]], test_results[[name]])
   })
 }
+
+rm(test_results)

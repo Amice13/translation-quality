@@ -38,6 +38,7 @@ create_retest_data <- function(dataset, score) {
 expert_scores <- read.csv("data/expert-scores.csv")
 machine_scores <- read.csv("data/machine-scores.csv")
 source_pairs <- read.csv("data/pairs.csv")
+llm_scores <- read.csv("data/llm-scores.csv")
 
 # Data enrichment
 
@@ -78,7 +79,26 @@ enriched_machine_scores <- machine_scores %>%
   ) %>%
   ungroup()
 
+#LLM as a judge scores
+enriched_llm_scores <- llm_scores %>%
+  filter(!is.na(answer)) %>%
+  mutate(
+    z_score = as.numeric(scale(answer)),
+    percentile = (rank(answer, ties.method = "average") - 0.5) / n(),
+    norm_score = qnorm(percentile),
+  )
 
+enriched_llm_fluency_adequacy <- llm_scores %>%
+  filter(is.na(answer)) %>%
+  mutate(
+    z_score_fluency = as.numeric(scale(fluency)),
+    percentile_fluency = (rank(fluency, ties.method = "average") - 0.5) / n(),
+    norm_score_fluency = qnorm(percentile_fluency),
+    z_score_adequacy = as.numeric(scale(adequacy)),
+    percentile_adequacy = (rank(adequacy, ties.method = "average") - 0.5) / n(),
+    norm_score_adequacy = qnorm(percentile_adequacy)
+  )
+  
 # Split source data to sub-groups
 students_scores <- enriched_expert_scores %>%
   filter(evaluator_type == "Student") %>%
@@ -97,6 +117,45 @@ machine_1f_scores <- create_wide_data(enriched_machine_scores, answer)
 machine_1f_z_scores <- create_wide_data(enriched_machine_scores, z_score)
 machine_1f_perc <- create_wide_data(enriched_machine_scores, percentile)
 machine_1f_norm <- create_wide_data(enriched_machine_scores, norm_score)
+
+# Process LLMs' scores
+machine_1f_scores <- create_wide_data(enriched_machine_scores, answer)
+machine_1f_z_scores <- create_wide_data(enriched_machine_scores, z_score)
+machine_1f_perc <- create_wide_data(enriched_machine_scores, percentile)
+machine_1f_norm <- create_wide_data(enriched_machine_scores, norm_score)
+
+llm_1f_scores <- create_wide_data(enriched_llm_scores, answer)
+llm_1f_z_scores <- create_wide_data(enriched_llm_scores, z_score)
+llm_1f_perc <- create_wide_data(enriched_llm_scores, percentile)
+llm_1f_norm <- create_wide_data(enriched_llm_scores, norm_score)
+
+llm_2f_fluency <- create_wide_data(enriched_llm_fluency_adequacy, fluency)
+llm_2f_z_fluency <- create_wide_data(
+  enriched_llm_fluency_adequacy,
+  z_score_fluency
+)
+llm_2f_fluency_perc <- create_wide_data(
+  enriched_llm_fluency_adequacy,
+  percentile_fluency
+)
+llm_2f_fluency_norm <- create_wide_data(
+  enriched_llm_fluency_adequacy,
+  norm_score_fluency
+)
+
+llm_2f_adequacy <- create_wide_data(enriched_llm_fluency_adequacy, adequacy)
+llm_2f_z_adequacy <- create_wide_data(
+  enriched_llm_fluency_adequacy,
+  z_score_adequacy
+)
+llm_2f_adequacy_perc <- create_wide_data(
+  enriched_llm_fluency_adequacy,
+  percentile_adequacy
+)
+llm_2f_adequacy_norm <- create_wide_data(
+  enriched_llm_fluency_adequacy,
+  norm_score_adequacy
+)
 
 # Process students' scores
 students_all_scores <- remove_duplicates(students_scores)
@@ -220,6 +279,21 @@ data <- list(
   experts_2f_adequacy_perc = experts_2f_adequacy_perc,
   experts_2f_adequacy_norm = experts_2f_adequacy_norm,
   expert_batch_difference = expert_batch_difference,
+  llm_1f_scores = llm_1f_scores,
+  llm_1f_z_scores = llm_1f_z_scores,
+  llm_1f_perc = llm_1f_perc,
+  llm_1f_norm = llm_1f_norm,
+  llm_2f_fluency = llm_2f_fluency,
+  llm_2f_z_fluency = llm_2f_z_fluency,
+  llm_2f_fluency_perc = llm_2f_fluency_perc,
+  llm_2f_fluency_norm = llm_2f_fluency_norm,
+  llm_2f_adequacy = llm_2f_adequacy,
+  llm_2f_z_adequacy = llm_2f_z_adequacy,
+  llm_2f_adequacy_perc = llm_2f_adequacy_perc,
+  llm_2f_adequacy_norm = llm_2f_adequacy_norm,
+  llm_1f_z_scores = llm_1f_z_scores,
+  llm_2f_z_fluency = llm_2f_z_fluency,
+  llm_2f_z_adequacy = llm_2f_z_adequacy,
   pairs = pairs
 )
 
@@ -230,7 +304,10 @@ rm(
   expert_scores,
   enriched_expert_scores,
   machine_scores,
+  llm_scores,
   enriched_machine_scores,
+  enriched_llm_scores,
+  enriched_llm_fluency_adequacy,
   source_pairs,
   students_scores,
   experts_single_scores,
@@ -261,6 +338,18 @@ rm(
   experts_2f_z_adequacy,
   experts_2f_adequacy_perc,
   experts_2f_adequacy_norm,
+  llm_1f_scores,
+  llm_1f_z_scores,
+  llm_1f_perc,
+  llm_1f_norm,
+  llm_2f_fluency,
+  llm_2f_z_fluency,
+  llm_2f_fluency_perc,
+  llm_2f_fluency_norm,
+  llm_2f_adequacy,
+  llm_2f_z_adequacy,
+  llm_2f_adequacy_perc,
+  llm_2f_adequacy_norm,
   expert_batch_difference,
   corpus,
   diversities,

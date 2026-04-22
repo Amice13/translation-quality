@@ -105,24 +105,48 @@ rm(irr_results, duration_stats, irr_ira)
 irr <- bind_rows(
   get_group_icc(data$machine_1f_scores, "Machine"),
   get_group_icc(data$machine_1f_z_scores, "Machine z"),
-  get_group_icc(data$students_1f_perc, "Machine perc"),
-  get_group_icc(data$students_1f_norm, "Machine norm"),
+  get_group_icc(data$machine_1f_perc, "Machine perc"),
+  get_group_icc(data$machine_1f_norm, "Machine norm"),
+
+  get_group_icc(data$llm_1f_scores, "LLM"),
+  get_group_icc(data$llm_1f_z_scores, "LLM z"),
+  get_group_icc(data$llm_1f_perc, "LLM perc"),
+  get_group_icc(data$llm_1f_norm, "LLM norm"),
+
   get_group_icc(data$students_1f_scores, "Student"),
   get_group_icc(data$students_1f_z_scores, "Student z"),
   get_group_icc(data$students_1f_perc, "Student perc"),
   get_group_icc(data$students_1f_norm, "Student norm"),
+  
   get_group_icc(data$experts_1f_scores, "Expert"),
   get_group_icc(data$experts_1f_z_scores, "Expert z"),
   get_group_icc(data$experts_1f_perc, "Expert perc"),
   get_group_icc(data$experts_1f_norm, "Expert norm"),
+  
   get_group_icc(data$experts_2f_fluency, "Fluency"),
   get_group_icc(data$experts_2f_z_fluency, "Fluency z"),
   get_group_icc(data$experts_2f_fluency_perc, "Fluency perc"),
   get_group_icc(data$experts_2f_fluency_norm, "Fluency norm"),
+  
+  get_group_icc(data$experts_2f_fluency, "Fluency"),
+  get_group_icc(data$experts_2f_z_fluency, "Fluency z"),
+  get_group_icc(data$experts_2f_fluency_perc, "Fluency perc"),
+  get_group_icc(data$experts_2f_fluency_norm, "Fluency norm"),
+
+  get_group_icc(data$llm_2f_fluency, "LLM fluency"),
+  get_group_icc(data$llm_2f_z_fluency, "LLM fluency z"),
+  get_group_icc(data$llm_2f_fluency_perc, "LLM fluency perc"),
+  get_group_icc(data$llm_2f_fluency_norm, "LLM fluency norm"),
+  
   get_group_icc(data$experts_2f_adequacy, "Adequacy"),
   get_group_icc(data$experts_2f_z_adequacy, "Adequacy z"),
   get_group_icc(data$experts_2f_adequacy_perc, "Adequacy perc"),
-  get_group_icc(data$experts_2f_adequacy_norm, "Adequacy norm")
+  get_group_icc(data$experts_2f_adequacy_norm, "Adequacy norm"),
+
+  get_group_icc(data$llm_2f_adequacy, "LLM adequacy"),
+  get_group_icc(data$llm_2f_z_adequacy, "LLM adequacy z"),
+  get_group_icc(data$llm_2f_adequacy_perc, "LLM adequacy perc"),
+  get_group_icc(data$llm_2f_adequacy_norm, "LLM adequacy norm")
 )
 
 irr <- irr %>%
@@ -131,23 +155,35 @@ irr <- irr %>%
       "Machine",
       "Student",
       "Expert",
+      "LLM",
       "Fluency",
       "Adequacy",
+      "LLM fluency",
+      "LLM adequacy",
       "Machine z",
+      "LLM z",
       "Student z",
       "Expert z",
       "Fluency z",
       "Adequacy z",
+      "LLM adequacy z",
+      "LLM fluency z",
       "Machine perc",
       "Student perc",
       "Expert perc",
+      "LLM perc",
       "Fluency perc",
       "Adequacy perc",
+      "LLM fluency perc",
+      "LLM adequacy perc",
       "Machine norm",
       "Student norm",
       "Expert norm",
+      "LLM norm",
       "Fluency norm",
-      "Adequacy norm"
+      "Adequacy norm",
+      "LLM fluency norm",
+      "LLM adequacy norm"
     ))
   )
 
@@ -161,7 +197,10 @@ ggplot(irr, aes(x = group, y = ICC)) +
   labs(x = "Group")
 
 results[["irr"]] <- irr
-custom_ggsave(result_path("Figure 2 - Inter-rater ICC (all experts).png"))
+custom_ggsave(
+  result_path("Figure 2 - Inter-rater ICC (all experts).png"),
+  width = 220
+)
 rm(irr)
 
 # Remove expert analysis
@@ -236,6 +275,51 @@ ggplot(
 
 custom_ggsave(result_path("Figure 3 - Adequacy influence.png"))
 
+results[["one_out_llm"]] <-
+  get_expert_influence(data$llm_1f_z_scores)
+
+ggplot(
+  results[["one_out_llm"]],
+  aes(x = removed_expert, y = ICC)
+) +
+  geom_point() +
+  geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.1) +
+  coord_flip() +
+  xlab("Removed LLM") +
+  ylab("ICC (with 95% confidence interval)")
+
+custom_ggsave(result_path("Figure 3 - LLM influence.png"))
+
+results[["one_out_llm_fluency"]] <-
+  get_expert_influence(data$llm_2f_z_fluency)
+
+ggplot(
+  results[["one_out_llm_fluency"]],
+  aes(x = removed_expert, y = ICC)
+) +
+  geom_point() +
+  geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.1) +
+  coord_flip() +
+  xlab("Removed LLM") +
+  ylab("ICC (with 95% confidence interval)")
+
+custom_ggsave(result_path("Figure 3 - LLM fluency influence.png"))
+
+results[["one_out_llm_adequacy"]] <-
+  get_expert_influence(data$llm_2f_z_adequacy)
+
+ggplot(
+  results[["one_out_llm_adequacy"]],
+  aes(x = removed_expert, y = ICC)
+) +
+  geom_point() +
+  geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.1) +
+  coord_flip() +
+  xlab("Removed LLM") +
+  ylab("ICC (with 95% confidence interval)")
+
+custom_ggsave(result_path("Figure 3 - LLM fluency influence.png"))
+
 # Machine evaluations clustering
 scores <- data$machine_1f_z_scores %>%
   dplyr::select(-hash)
@@ -248,7 +332,31 @@ ggdendrogram(machine_cluster, rotate = TRUE, size = 2)
 results[["machine_cluster"]] <- machine_cluster
 
 custom_ggsave(result_path("Figure 4 - Machine models dendrogram.png"))
-rm(scores, machine_cluster)
+
+with_llm_scores <- data$machine_1f_z_scores %>%
+  left_join(data$llm_1f_z_scores, by = "hash") %>%
+  dplyr::select(-hash)
+
+llm_machine_cluster <- hclust(
+  as.dist(1 - cor(with_llm_scores,
+                  method = "spearman",
+                  use = "pairwise.complete.obs"
+                  )
+          ),
+  method = "average"
+)
+
+ggdendrogram(llm_machine_cluster, rotate = TRUE, size = 2)
+custom_ggsave(result_path("Figure 4 - Machine models with LLMs dendrogram.png"))
+
+results[["llm_machine_cluster"]] <- llm_machine_cluster
+rm(
+  scores,
+  llm_scores,
+  with_llm_scores,
+  machine_cluster,
+  llm_machine_cluster
+)
 
 # Grouped scores
 
@@ -272,7 +380,10 @@ irr <- bind_rows(
   get_group_icc(
     data$machine_1f_z_scores %>% dplyr::select(-bicleaner_ai_score),
     "No bicleaner_ai_score"
-  )
+  ),
+  get_group_icc(data$llm_1f_z_scores, "LLM"),
+  get_group_icc(data$llm_2f_z_fluency, "LLM fluency"),
+  get_group_icc(data$llm_2f_z_adequacy, "LLM adequacy")
 )
 
 irr <- irr %>%
@@ -284,7 +395,10 @@ irr <- irr %>%
       "Experts",
       "No bicleaner_ai_score",
       "Xcomet+Metricx24",
-      "2 Cometkiwi+Wmt22"
+      "2 Cometkiwi+Wmt22",
+      "LLM",
+      "LLM fluency",
+      "LLM adequacy"
     ))
   )
 
@@ -366,6 +480,39 @@ bicleaner_ai_score <- data$machine_1f_z_scores %>%
   ) %>%
   dplyr::select(hash, bicleaner_ai)
 
+llm_scores <- data$llm_1f_z_scores %>%
+  mutate(
+    llm = rowMeans(dplyr::pick(-hash))
+  ) %>%
+  dplyr::select(hash, llm)
+
+llm_fluency <- data$llm_2f_z_fluency %>%
+  mutate(
+    llm_fluency = rowMeans(dplyr::pick(-hash))
+  ) %>%
+  dplyr::select(hash, llm_fluency)
+
+llm_adequacy <- data$llm_2f_z_adequacy %>%
+  mutate(
+    llm_adequacy = rowMeans(dplyr::pick(-hash))
+  ) %>%
+  dplyr::select(hash, llm_adequacy)
+
+fluency_scores <- data$experts_2f_z_fluency %>%
+  dplyr::select(all_of(c(experts_2fa, "hash"))) %>%
+  mutate(
+    fluency = rowMeans(dplyr::pick(all_of(experts_2fa)))
+  ) %>%
+  dplyr::select(hash, fluency)
+
+adequacy_scores <- data$experts_2f_z_adequacy %>%
+  dplyr::select(all_of(c(experts_2fa, "hash"))) %>%
+  mutate(
+    adequacy = rowMeans(dplyr::pick(all_of(experts_2fa)))
+  ) %>%
+  dplyr::select(hash, adequacy)
+
+
 scores <- expert_scores %>%
   left_join(student_scores, by = "hash") %>%
   left_join(fluency_scores, by = "hash") %>%
@@ -373,8 +520,11 @@ scores <- expert_scores %>%
   left_join(cometkiwi_wmt_scores, by = "hash") %>%
   left_join(xcomet_metricx24_scores, by = "hash") %>%
   left_join(machine_scores, by = "hash") %>%
-  left_join(bicleaner_ai_score, by = "hash")
-
+  left_join(bicleaner_ai_score, by = "hash") %>%
+  left_join(llm_scores, by = "hash") %>%
+  left_join(llm_fluency, by = "hash") %>%
+  left_join(llm_adequacy, by = "hash")
+  
 complete <- data$pairs %>%
   left_join(scores, by = "hash") %>%
   mutate(holistic = experts)
@@ -396,7 +546,10 @@ cors <- cor(
       cometkiwi_wmt,
       xcomet_metricx24,
       machines,
-      bicleaner_ai
+      bicleaner_ai,
+      llm,
+      llm_fluency,
+      llm_adequacy
     ),
   use = "pairwise.complete.obs",
   method = "spearman"
@@ -420,6 +573,9 @@ rm(
   xcomet_metricx24_scores,
   cometkiwi_wmt_scores,
   bicleaner_ai_score,
+  llm,
+  llm_fluency,
+  llm_adequacy,
   cors
 )
 

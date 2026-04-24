@@ -119,11 +119,6 @@ machine_1f_perc <- create_wide_data(enriched_machine_scores, percentile)
 machine_1f_norm <- create_wide_data(enriched_machine_scores, norm_score)
 
 # Process LLMs' scores
-machine_1f_scores <- create_wide_data(enriched_machine_scores, answer)
-machine_1f_z_scores <- create_wide_data(enriched_machine_scores, z_score)
-machine_1f_perc <- create_wide_data(enriched_machine_scores, percentile)
-machine_1f_norm <- create_wide_data(enriched_machine_scores, norm_score)
-
 llm_1f_scores <- create_wide_data(enriched_llm_scores, answer)
 llm_1f_z_scores <- create_wide_data(enriched_llm_scores, z_score)
 llm_1f_perc <- create_wide_data(enriched_llm_scores, percentile)

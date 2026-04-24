@@ -3,20 +3,20 @@
 experts <- results[["experts"]]
 experts_2fa <- results[["experts_2fa"]]
 
-student_scores <- data$students_1f_scores %>%
+student_scores <- data$students_1f_z_scores %>%
   mutate(
     students = apply(dplyr::select(., -hash), 1, sd)
   ) %>%
   dplyr::select(hash, students)
 
-expert_scores <- data$experts_1f_scores %>%
+expert_scores <- data$experts_1f_z_scores %>%
   dplyr::select(all_of(c(experts, "hash"))) %>%
   mutate(
     experts = apply(dplyr::pick(all_of(experts)), 1, sd)
   ) %>%
   dplyr::select(hash, experts)
 
-fluency_scores <- data$experts_2f_fluency %>%
+fluency_scores <- data$experts_2f_z_fluency %>%
   dplyr::select(all_of(c(experts_2fa, "hash"))) %>%
   mutate(
     fluency = apply(dplyr::pick(all_of(experts_2fa)), 1, sd)
